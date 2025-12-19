@@ -68,6 +68,7 @@ namespace Consumer_API_BFF
             builder.Services.AddScoped<IPollFieldsService, PollFieldsService>();
             builder.Services.AddScoped<IGetJobIdForContentTypeGroupsService, GetJobIdForContentTypeGroupsService>();
             builder.Services.AddScoped<IPollContentTypeGroupsService, PollContentTypeGroupsService>();
+            builder.Services.AddScoped<IGetConnectionsService, GetConnectionsService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
