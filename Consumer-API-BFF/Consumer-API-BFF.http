@@ -1,0 +1,6 @@
+@Consumer_API_BFF_HostAddress = http://localhost:5241
+
+GET {{Consumer_API_BFF_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
