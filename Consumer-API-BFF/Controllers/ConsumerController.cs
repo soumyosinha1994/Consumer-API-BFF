@@ -18,9 +18,9 @@ namespace Consumer_API_BFF.Controllers
 
         private readonly IPollFieldsService _pollFieldsService;
         private readonly IPollContentTypeGroupsService _pollContentTypeGroupsService;
-        private readonly IGetConnectionsService _getConnectionsService;
+        private readonly IConnectionsService _getConnectionsService;
 
-        public ConsumerController(IHttpClientFactory httpClientFactory, IPollFieldsService pollFieldsService, IPollContentTypeGroupsService pollContentTypeGroupsService, IGetConnectionsService getConnectionsService)
+        public ConsumerController(IHttpClientFactory httpClientFactory, IPollFieldsService pollFieldsService, IPollContentTypeGroupsService pollContentTypeGroupsService, IConnectionsService getConnectionsService)
         {
             _pollFieldsService = pollFieldsService;
             _pollContentTypeGroupsService = pollContentTypeGroupsService;
@@ -69,7 +69,7 @@ namespace Consumer_API_BFF.Controllers
         }
 
         [HttpGet("/get-connection")]
-        public async Task<ActionResult> RetrieveConnections([FromHeader(Name = "Authorization")] string authorization, string connectionId="")
+        public async Task<ActionResult> RetrieveConnections([FromHeader(Name = "Authorization")] string authorization, string connectionId = "")
         {
             if (string.IsNullOrEmpty(authorization))
             {
@@ -83,7 +83,7 @@ namespace Consumer_API_BFF.Controllers
                 Console.WriteLine("Failed to get access token");
             }
             var pollResponseBody = await _getConnectionsService.PollConnection(connectionId, bearerToken, CancellationToken.None);
-            
+
             if (!string.IsNullOrEmpty(connectionId))
             {
                 var detailedResponse = JsonSerializer.Deserialize<ConnectionDetailsResponse>(pollResponseBody, JsonFormatUtility.DefaultJsonOptions);
@@ -94,7 +94,44 @@ namespace Consumer_API_BFF.Controllers
                 var response = JsonSerializer.Deserialize<ConnectionListResponse>(pollResponseBody, JsonFormatUtility.DefaultJsonOptions);
                 return Ok(response);
             }
-               
+        }
+
+        [HttpPost("/add-connection")]
+        public async Task<ActionResult> AddConnections([FromHeader(Name = "Authorization")] string authorization, [FromBody] CreateConnectionRequest createConnectionRequest)
+        {
+            if (string.IsNullOrEmpty(authorization))
+            {
+                return Unauthorized("Authorization header is missing");
+            }
+
+            var bearerToken = authorization.ToString();
+
+            if (string.IsNullOrEmpty(bearerToken))
+            {
+                Console.WriteLine("Failed to get access token");
+            }
+            var pollResponseBody = await _getConnectionsService.CreateConnection(bearerToken, createConnectionRequest, CancellationToken.None);
+            var response = JsonSerializer.Deserialize<CreateConnectionResponse>(pollResponseBody, JsonFormatUtility.DefaultJsonOptions);
+            return Ok(response);
+        }
+
+        [HttpDelete("/delete-connection")]
+        public async Task<ActionResult> DeleteConnections([FromHeader(Name = "Authorization")] string authorization, string connectionId)
+        {
+            if (string.IsNullOrEmpty(authorization))
+            {
+                return Unauthorized("Authorization header is missing");
+            }
+
+            var bearerToken = authorization.ToString();
+
+            if (string.IsNullOrEmpty(bearerToken))
+            {
+                Console.WriteLine("Failed to get access token");
+            }
+            var pollResponseBody = await _getConnectionsService.DeleteConnection(connectionId, bearerToken, CancellationToken.None);
+            var response = JsonSerializer.Deserialize<DeleteConnectionResponse>(pollResponseBody, JsonFormatUtility.DefaultJsonOptions);
+            return Ok(response);
         }
     }
 }
