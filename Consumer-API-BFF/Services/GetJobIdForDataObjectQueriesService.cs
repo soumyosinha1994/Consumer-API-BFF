@@ -4,23 +4,22 @@ using System.Web;
 
 namespace Consumer_API_BFF.Services
 {
-    public class GetJobIdForContentTypeGroupsService : IGetJobIdForContentTypeGroupsService
+    public class GetJobIdForDataObjectQueriesService : IGetJobIdForDataObjectQueriesService
     {
         private readonly string _connection_ID;
         private readonly string _base_Url;
         private readonly IHttpClientFactory _httpClientFactory;
-        public GetJobIdForContentTypeGroupsService(IConfiguration configuration, IHttpClientFactory httpClientFactory)
+        public GetJobIdForDataObjectQueriesService(IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
             _connection_ID = configuration["CONNECTION_ID"]!;
             _base_Url = configuration["BASE_URL"]!;
             _httpClientFactory = httpClientFactory;
         }
-        public async Task<string> GetJobIdAsync(string authToken, string operation, int? offset, int? pageSize, CancellationToken cancellationToken)
+        public async Task<string> GetJobIdAsync(string authToken, int? offset, int? pageSize, CancellationToken cancellationToken)
         {
             var client = _httpClientFactory.CreateClient();
 
             var query = HttpUtility.ParseQueryString(string.Empty);
-            query["operation"] = operation;
             if (offset.HasValue)
                 query["offset"] = offset.Value.ToString();
 
@@ -29,11 +28,11 @@ namespace Consumer_API_BFF.Services
 
             var uriBuilder = new UriBuilder(_base_Url)
             {
-                Path = $"connections/{_connection_ID}/content-type-groups",
+                Path = $"connections/{_connection_ID}/data-objects/queries",
                 Query = query.ToString()
             };
             var request = new HttpRequestMessage(HttpMethod.Get, uriBuilder.Uri);
-            var token = authToken.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)? authToken: $"Bearer {authToken}";
+            var token = authToken.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) ? authToken : $"Bearer {authToken}";
             request.Headers.Add("Authorization", token);
             request.Headers.Add("Accept", "application/json");
 

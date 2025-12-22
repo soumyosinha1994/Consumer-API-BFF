@@ -26,7 +26,8 @@ namespace Consumer_API_BFF.Services
                 var pollUrl = $"{_base_Url}/connections/{_connection_ID}/contents/{contentId}/fields/jobs/{jobId}";
 
                 var pollRequest = new HttpRequestMessage(HttpMethod.Get, pollUrl);
-                pollRequest.Headers.Add("Authorization", $"Bearer {authToken}");
+                var token = authToken.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) ? authToken : $"Bearer {authToken}";
+                pollRequest.Headers.Add("Authorization", token);
                 pollRequest.Headers.Add("Accept", "application/json");
                 await Task.Delay(500, cancellationToken);
                 try

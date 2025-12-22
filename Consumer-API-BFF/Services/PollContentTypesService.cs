@@ -1,31 +1,29 @@
 ﻿using Consumer_API_BFF.IServices;
-using Hyland.MCA.Models;
-using System.Web;
 
 namespace Consumer_API_BFF.Services
 {
-    public class PollContentTypeGroupsService : IPollContentTypeGroupsService
+    public class PollContentTypesService : IPollContentTypesService
     {
         private readonly string _connection_ID;
         private readonly string _base_Url;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IGetJobIdForContentTypeGroupsService _getJobIdForContentTypeGroupsService;
-        public PollContentTypeGroupsService(IConfiguration configuration, IHttpClientFactory httpClientFactory, IGetJobIdForContentTypeGroupsService getJobIdForContentTypeGroupsService)
+        private readonly IGetJobIdForContentTypeService _getJobIdForContentTypeService;
+        public PollContentTypesService(IConfiguration configuration, IHttpClientFactory httpClientFactory, IGetJobIdForContentTypeService getJobIdForContentTypeService)
         {
             _connection_ID = configuration["CONNECTION_ID"]!;
             _base_Url = configuration["BASE_URL"]!;
             _httpClientFactory = httpClientFactory;
-            _getJobIdForContentTypeGroupsService = getJobIdForContentTypeGroupsService;
+            _getJobIdForContentTypeService = getJobIdForContentTypeService;
         }
 
-        public async Task<string> PollGetContentTypeGroupsService(string authToken, string operation, int? offset, int? pageSize, CancellationToken cancellationToken)
+        public async Task<string> PollGetContentTypesService(string contentTypeId, string authToken, string operation, CancellationToken cancellationToken)
         {
             var client = _httpClientFactory.CreateClient();
             var pollResponseBody = string.Empty;
-            var jobId = await _getJobIdForContentTypeGroupsService.GetJobIdAsync(authToken, operation, offset, pageSize, cancellationToken);
+            var jobId = await _getJobIdForContentTypeService.GetJobIdAsync(contentTypeId, authToken, operation, cancellationToken);
             if (!string.IsNullOrEmpty(jobId))
             {
-                var pollUrl = $"{_base_Url}/connections/{_connection_ID}/content-type-groups/jobs/{jobId}";
+                var pollUrl = $"{_base_Url}/connections/{_connection_ID}/content-types/{contentTypeId}/jobs/{jobId}";
                 var pollRequest = new HttpRequestMessage(HttpMethod.Get, pollUrl);
                 var token = authToken.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) ? authToken : $"Bearer {authToken}";
                 pollRequest.Headers.Add("Authorization", token);
@@ -47,4 +45,3 @@ namespace Consumer_API_BFF.Services
         }
     }
 }
-

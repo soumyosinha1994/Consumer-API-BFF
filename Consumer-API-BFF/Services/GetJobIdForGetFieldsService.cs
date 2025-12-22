@@ -21,7 +21,8 @@ namespace Consumer_API_BFF.Services
             var fieldsUrl = $"{_base_Url}/connections/{_connection_ID}/contents/{contentId}/fields";
 
             var request = new HttpRequestMessage(HttpMethod.Get, fieldsUrl);
-            request.Headers.Add("Authorization", $"Bearer {authToken}");
+            var token = authToken.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) ? authToken : $"Bearer {authToken}";
+            request.Headers.Add("Authorization", token);
             request.Headers.Add("Accept", "application/json");
 
             var jobResponse = await client.SendAsync(request, cancellationToken);

@@ -63,12 +63,38 @@ namespace Consumer_API_BFF
                         ValidateAudience = false
                     };
                 });
+            builder.Services.AddAuthorization();
             builder.Services.AddScoped<IGetAuthTokenService, GetAuthTokenService>();
             builder.Services.AddScoped<IGetJobIdForGetFieldsService, GetJobIdForGetFieldsService>();
             builder.Services.AddScoped<IPollFieldsService, PollFieldsService>();
             builder.Services.AddScoped<IGetJobIdForContentTypeGroupsService, GetJobIdForContentTypeGroupsService>();
             builder.Services.AddScoped<IPollContentTypeGroupsService, PollContentTypeGroupsService>();
             builder.Services.AddScoped<IConnectionsService, ConnectionsService>();
+            builder.Services.AddScoped<IGetJobIdForContentTypeGroupIdService, GetJobIdForContentTypeGroupIdService>();
+            builder.Services.AddScoped<IPollContentTypeGroupsIdService, PollContentTypeGroupsIdService>();
+            builder.Services.AddScoped<IGetJobIdForContentTypeService, GetJobIdForContentTypeService>();
+            builder.Services.AddScoped<IPollContentTypesService, PollContentTypesService>();
+            builder.Services.AddScoped<IGetJobIdForDataObjectQueriesService, GetJobIdForDataObjectQueriesService>();
+            builder.Services.AddScoped<IPollDataObjectQueriesService, PollDataObjectQueriesService>();
+            builder.Services.AddScoped<IGetJobIdForDataObjectQueriesByIdService, GetJobIdForDataObjectQueriesByIdService>();
+            builder.Services.AddScoped<IPollDataObjectQueriesByIdService, PollDataObjectQueriesByIdService>();
+            builder.Services.AddScoped<IGetJobIdForExecuteDataObjectQueriesService, GetJobIdForExecuteDataObjectQueriesService>();
+            builder.Services.AddScoped<IPollExecuteObjectDataQueriesService, PollExecuteObjectDataQueriesService>();
+            builder.Services.AddScoped<IGetJobIdForStandardSearchService, GetJobIdForStandardSearchService>();
+            builder.Services.AddScoped<IPollStandardSearchService, PollStandardSearchService>();
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAngular",
+                    policy =>
+                    {
+                        policy
+                            .AllowAnyOrigin()
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -79,6 +105,7 @@ namespace Consumer_API_BFF
             }
 
             app.UseHttpsRedirection();
+            app.UseCors(o => o.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseSwaggerUI(c =>
@@ -86,7 +113,7 @@ namespace Consumer_API_BFF
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "CF Gateway API");
             });
             app.MapControllers();
-            app.UseCors(o => o.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            
             app.Run();
         }
     }

@@ -19,7 +19,8 @@ namespace Consumer_API_BFF.Services
         {
             var client = _httpClientFactory.CreateClient();
             var url = $"{_base_Url}/connections";
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
+            var token = authToken.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) ? authToken : $"Bearer {authToken}";
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token);
             var response = await client.PostAsJsonAsync(url, createConnectionRequest, cancellationToken);
             var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
             return responseBody;
@@ -29,7 +30,8 @@ namespace Consumer_API_BFF.Services
         {
             var client = _httpClientFactory.CreateClient();
             var url = $"{_base_Url}/connections/{connectionId}";
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
+            var token = authToken.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) ? authToken : $"Bearer {authToken}";
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token);
             var response = await client.DeleteAsync(url,cancellationToken);
             var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
             return responseBody;
@@ -41,7 +43,8 @@ namespace Consumer_API_BFF.Services
             var pollResponseBody = string.Empty;
             var pollUrl = string.IsNullOrEmpty(connectionId)? $"{_base_Url}/connections": $"{_base_Url}/connections/{connectionId}";
             var pollRequest = new HttpRequestMessage(HttpMethod.Get, pollUrl);
-            pollRequest.Headers.Add("Authorization", $"Bearer {authToken}");
+            var token = authToken.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) ? authToken : $"Bearer {authToken}";
+            pollRequest.Headers.Add("Authorization", token);
             pollRequest.Headers.Add("Accept", "application/json");
             try
             {
