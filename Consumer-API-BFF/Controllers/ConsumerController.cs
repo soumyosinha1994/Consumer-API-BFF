@@ -140,7 +140,7 @@ namespace Consumer_API_BFF.Controllers
             return Ok(response);
         }
 
-        [HttpGet("/data-objects-queries-by-id/queryId")]
+        [HttpGet("/data-objects-queries-by-id/{queryId}")]
         public async Task<ActionResult> RetrieveDataObjectQueriesById(string queryId, [FromHeader(Name = "Authorization")] string authorization)
         {
             if (string.IsNullOrEmpty(authorization))
@@ -159,7 +159,7 @@ namespace Consumer_API_BFF.Controllers
             return Ok(response);
         }
 
-        [HttpPost("/execute-data-objects-queries/queryId")]
+        [HttpPost("/execute-data-objects-queries/{queryId}")]
         public async Task<ActionResult> ExecuteDataObjectQueries(string queryId, [FromHeader(Name = "Authorization")] string authorization, [FromBody] DataObjectQuery dataObjectQuery, [FromQuery] int? offset = 0, [FromQuery] int? pageSize = 0)
         {
             if (string.IsNullOrEmpty(authorization))
