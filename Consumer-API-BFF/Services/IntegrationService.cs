@@ -24,9 +24,12 @@ namespace Consumer_API_BFF.Services
             if(!string.IsNullOrEmpty(cursor))
                query["cursor"] = cursor;
 
+            if(!string.IsNullOrEmpty(integrationId))
+                query["integrationId"] = integrationId;
+
             var uriBuilder = new UriBuilder(_base_Url)
             {
-                Path = string.IsNullOrEmpty(integrationId) ? $"system-integrations" : $"system-integrations/{integrationId}",
+                Path = $"system-integrations",
                 Query = query.ToString()
             };
             var request = new HttpRequestMessage(HttpMethod.Get, uriBuilder.Uri);

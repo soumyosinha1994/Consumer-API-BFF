@@ -198,8 +198,8 @@ namespace Consumer_API_BFF.Controllers
             var response = JsonSerializer.Deserialize<JobRetrievalResponse<CollectionResult<SearchContentResult>>>(pollResponseBody, JsonFormatUtility.DefaultJsonOptions);
             return Ok(response);
         }
-        [HttpPost("/system-integrations")]
-        public async Task<ActionResult> GetSystemIntegrations([FromHeader(Name = "Authorization")] string authorization, string integrationId = "", [FromQuery] int? pageSize = 0, [FromQuery] string? cursor = "")
+        [HttpGet("/system-integrations")]
+        public async Task<ActionResult> GetSystemIntegrations([FromHeader(Name = "Authorization")] string authorization, [FromQuery] string integrationId = "", [FromQuery] int? pageSize = 0, [FromQuery] string? cursor = "")
         {
             if (string.IsNullOrEmpty(authorization))
             {
