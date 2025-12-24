@@ -82,6 +82,7 @@ namespace Consumer_API_BFF
             builder.Services.AddScoped<IPollExecuteObjectDataQueriesService, PollExecuteObjectDataQueriesService>();
             builder.Services.AddScoped<IGetJobIdForStandardSearchService, GetJobIdForStandardSearchService>();
             builder.Services.AddScoped<IPollStandardSearchService, PollStandardSearchService>();
+            builder.Services.AddScoped<IIntegrationService, IntegrationService>();
 
             builder.Services.AddCors(options =>
             {

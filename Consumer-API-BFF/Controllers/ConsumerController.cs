@@ -25,12 +25,13 @@ namespace Consumer_API_BFF.Controllers
         private readonly IPollDataObjectQueriesByIdService _pollDataObjectQueriesByIdService;
         private readonly IPollExecuteObjectDataQueriesService _pollExecuteObjectDataQueriesService;
         private readonly IPollStandardSearchService _pollStandardSearchService;
+        private readonly IIntegrationService _integrationService;
 
 
         public ConsumerController(IHttpClientFactory httpClientFactory, IPollFieldsService pollFieldsService, IPollContentTypeGroupsService pollContentTypeGroupsService,
             IConnectionsService getConnectionsService, IPollContentTypeGroupsIdService pollContentTypeGroupsIdService, IPollContentTypesService pollContentTypesIdService,
             IPollDataObjectQueriesService pollDataObjectQueriesService, IPollDataObjectQueriesByIdService pollDataObjectQueriesByIdService, IPollExecuteObjectDataQueriesService pollExecuteObjectDataQueriesService, 
-            IPollStandardSearchService pollStandardSearchService)
+            IPollStandardSearchService pollStandardSearchService, IIntegrationService integrationService)
         {
             _pollFieldsService = pollFieldsService;
             _pollContentTypeGroupsService = pollContentTypeGroupsService;
@@ -40,6 +41,7 @@ namespace Consumer_API_BFF.Controllers
             _pollDataObjectQueriesByIdService = pollDataObjectQueriesByIdService;
             _pollExecuteObjectDataQueriesService = pollExecuteObjectDataQueriesService;
             _pollStandardSearchService = pollStandardSearchService;
+            _integrationService = integrationService;
         }
 
         [HttpGet("{contentId}/fields")]
@@ -194,6 +196,24 @@ namespace Consumer_API_BFF.Controllers
             }
             var pollResponseBody = await _pollStandardSearchService.PollStandardSearch(bearerToken, contentSearchRequest, offset, pageSize, CancellationToken.None);
             var response = JsonSerializer.Deserialize<JobRetrievalResponse<CollectionResult<SearchContentResult>>>(pollResponseBody, JsonFormatUtility.DefaultJsonOptions);
+            return Ok(response);
+        }
+        [HttpPost("/system-integrations")]
+        public async Task<ActionResult> GetSystemIntegrations([FromHeader(Name = "Authorization")] string authorization, string integrationId = "", [FromQuery] int? pageSize = 0, [FromQuery] string? cursor = "")
+        {
+            if (string.IsNullOrEmpty(authorization))
+            {
+                return Unauthorized("Authorization header is missing");
+            }
+
+            var bearerToken = authorization.ToString();
+
+            if (string.IsNullOrEmpty(bearerToken))
+            {
+                Console.WriteLine("Failed to get access token");
+            }
+            var pollResponseBody = await _integrationService.PollIntegration(integrationId,bearerToken,pageSize,cursor, CancellationToken.None);
+            var response = JsonSerializer.Deserialize<SystemIntegrationResponse>(pollResponseBody, JsonFormatUtility.DefaultJsonOptions);
             return Ok(response);
         }
     }
